@@ -1,0 +1,159 @@
+
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Created on Sat Jan 11 12:19:56 2014
+
+"""
+
+import sys
+import string
+
+print('Create a file CutListParts.txt with the kerf eg(0.125) as the first line.')
+print('Plus the number of parts followed by the length of the parts')
+print('One per line, number and length seperated by "," as shown below')
+print()
+print('0.125')
+print('3,24')
+print('2,18.5')
+print('12,48')
+print('15,4')
+print()
+print('Create a file CutListStock.txt with the length of your stock in inches.')
+print('One line, numbers seperated by comas (96,48,120,53,72).')
+print()
+print()
+print('Check your cut list. The first line is the kerf.')
+print('Subsequent lines are num. of pieces, length.')
+print('NO SPACES -- NO BLANK LINES.')
+print()
+
+dim = []
+j = 0    ## l = is part length and number of parts
+tl = 0   ## total length
+ln = 0   ## ln = length of each piece
+qty = 0  ## qty = the number of pieces of each length
+kerf = 0
+cList = ''
+
+f = open('CutListParts.txt', 'r')
+while 1:
+    ## print the cut list
+    j = f.readline()[:-1]
+    if j == '': break
+    print(j)  
+
+print()
+p = input('Print to File CutListOutput.txt: Y/N ')
+print()
+
+f.seek(0)  ## set the file pointer to start of file
+kerf = float(f.readline())
+## Loop through the cut list appending parts to dim
+while 1:
+    j = str.split(f.readline(), ',')
+    if j == ['']:
+        break
+    else:
+        qty = float(str(j[0]))
+        ln = float(str(j[1]))
+        while qty > 0:
+            tl += ln + kerf
+            dim.append(ln)
+            qty -= 1
+
+print(' ')
+print('Total Length of All Items: ', round(tl, 4), ' Inches')
+if p == 'Y' or p == 'y':
+    f1 = open('CutListOutput.txt', 'w')
+    cList = 'Total Length of All tems: ' + str(round(tl, 4)) + ' Inches' + '\n'
+    f1.write(cList)
+    f1.write('\n')
+f.close()
+
+
+## Loop through the stock list appending to stdim
+cList = ''
+stdim = []
+stLen = 0
+f = open('CutListStock.txt', 'r')
+while 1:
+    st = str.split(f.readline(), ',')
+    if st == ['']:
+        break
+    else:
+        for j in range (len(st)):
+            st1 = int(str(st[j]))
+            stdim.append(st1)
+            stLen += st1
+f.close()
+
+stdim.sort()
+
+print('Available Stock: ', stdim, ' Length in Inches: ',stLen)
+print(' ')
+if p == 'Y' or p == 'y':
+    cList = 'Available Stock: ' + str(stdim) + ' Length in Inches: ' + str(stLen) + '\n'
+    f1.write(cList)
+    f1.write('\n')
+
+if tl * 1.05 > stLen:
+    print('YOU MAY NOT HAVE ENOUGH STOCK !!!!!!')
+    print(' ')
+    X = input('Press ENTER to Continue "Q" to Quit: ')
+    print(' ')
+    if X == 'Q' or X == 'q':
+        sys.exit()
+
+# work with a copy of dim so as not to alter the original list
+dims = dim[:]
+#get the list of part lengths sorted from biggest to smallest
+dims.sort()
+dims.reverse()
+
+j == 0
+for j in range(len(stdim)):
+    stock = int(str(stdim[j]))
+    print('Stock Length:',stock, 'Inches:')
+    if p == 'Y' or p == 'y':
+        cList = 'Stock Length: ' + str(stock) + ' Inches:' + '\n'
+        f1.write(cList)
+
+    for i in range(len(stdim)):
+        cutList = []
+
+        if len(dims)> 0 :                   #if the parts left to be cut are longer than the stock, there is no need to continue
+            for item in dims [:]:           #by using dims [:], the for loop iterates over the original dims list,
+                if item <= stock:
+                    dims.remove(item)        #take the part off of the list of parts to be cut
+                    cutList.insert(0, item)  #put the part length into the cut list
+                    stock -= item            #the part gets cut off, and the stock gets shorter.
+                    stock -= kerf            #allow for kerf
+
+            if len(cutList) == 0:
+                break
+            print('Cut List is:', cutList, ' Drop is:', round(stock, 4), 'inches','\n')
+            if p == 'Y' or p == 'y':
+                cList = 'Cut list is: ' + str(cutList) + ' Drop is:' + str(round(stock, 4)) + ' Inches' + '\n' ###Check round function on this line
+                f1.write(cList)
+                f1.write('\n')
+
+            if len(dims) == 0: break
+
+if len(dims) > 0:
+    print('YOU DO NOT HAVE ENOUGH STOCK!!!!!')
+    print(len(dims), ('ITEMS WERE LEFT UNACCOUNTED FOR!!!!!'))
+    print()
+    
+if p == 'Y' or p == 'y':
+    f1.flush()
+    f1.close()
+
+s = input('Press Enter to Continue:')
+print()
+sys.exit()
+
+
+#################### This is working, but now make the input a CSV table ############[/QUOTE]
