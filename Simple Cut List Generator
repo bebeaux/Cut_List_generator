@@ -1,0 +1,43 @@
+### Python 3.3.2   UTF-8 encoding
+
+stockLength = int(input('What is the stock Length?'))
+kerf =  float (input('What is the kerf?'))
+dim = []  #this list holds all the dimensions of the parts that need to be cut
+
+print('What are the lengths of the parts to be cut?  (enter zero to finish)')
+#this while loop allows you to enter the part lengths, and entering zero escapes the loop
+###figure out a way to input mathematical expressions i.e. if you have four parts that are each 6 inches long, enter (4 ) 6
+while True:
+    item = float(input())
+    if item == 0: break
+    dim.append (item)
+ # work with a copy of dim so as not to alter the original list   
+dims = dim[:]  
+#get the list of part lengths sorted from biggest to smallest
+dims.sort()                            
+dims.reverse()                                      
+# this determines how many pieces of stock are needed
+cutListQty = int((sum(dims))/ stockLength + 1)
+print ("You need ", cutListQty, "pieces of stock.")
+for i in range (cutListQty):
+    cutList = []
+    stock = stockLength
+ 
+    if len(dims)> 0 :                  #if the parts left to be cut are longer than the stock, there is no need to continue
+        for item in dims [:]:                                 #by using dims [:], the for loop iterates over the original dims list, and it doesn't get messed up as items get removed from dims
+           if item <= stock:
+            
+               dims.remove(item)                    #take the part off of the list of parts to be cut
+               cutList.insert(0, item)                 #put the part length into the cut list
+               stock -= item                            #the part gets cut off, and the stock gets shorter. -->change this later to account for kerf
+               stock = stock - kerf                #allow for kerf
+        
+        print ('Cut List is', cutList, 'Drop is', stock, 'inches')
+        #uncomment this line if you want to see the progress of the program
+        #also by printing an empty set at the end, you are assured all parts were included in the part list
+        #print(dims)
+
+#################### This is working, but now make the input a CSV table ############
+
+    
+
